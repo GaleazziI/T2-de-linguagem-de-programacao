@@ -1,6 +1,7 @@
 % ============================================================
 %  BIBLIOTECA PESSOAL - Trabalho T2 de Programacao em Logica
 %  Disciplina: Programacao em Logica (Prolog)
+%  Augusto Peroni Baldino, Joao Oliveira Galeazzi e Mateus Simões Neubarth
 % ============================================================
 
 % --------------------------------------------------------------
