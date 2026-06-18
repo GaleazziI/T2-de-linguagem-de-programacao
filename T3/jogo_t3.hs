@@ -1,3 +1,6 @@
+import System.Random (randomIO)
+import Data.List (genericLength)
+
 vence :: String -> String -> Bool
 vence "Pedra" "Tesoura" = True 
 vence "Pedra" "Agua" = True
@@ -15,6 +18,12 @@ vence "Fogo" "Tesoura" = True
 vence "Agua" "Fogo" = True
 
 vence _ _ = False
+
+pickRandom :: [String] -> String
+pickRandom xs = do
+    idx <- randomIO (0, 4)
+    str <- xs!!idx
+    return str
 
 
 resultado :: String -> String -> String
@@ -40,6 +49,12 @@ resultadoTonto entrada
     | otherwise         = resultado entrada "Agua"
 
 
+resultadoNormal :: String -> String
+resultadoNormal entrada = do
+    maquina <- pickRandom ["Pedra", "Papel", "Tesoura", "Fogo", "Agua"]
+    return (resultado entrada maquina)
+
+jogar :: String -> String
 jogar modo = do
     putStrLn "Escolha sua jogada:"
     putStrLn "1 - Pedra"
@@ -59,6 +74,7 @@ jogar modo = do
     resultado <- case modo of
         "1" -> return (resultadoDeus jogada)
         "2" -> return (resultadoTonto jogada)
+        "3" -> return (resultadoNormal jogada)
 
     putStrLn (resultado)
 
@@ -67,5 +83,6 @@ main = do
     putStrLn "Escolha um modo"
     putStrLn "1 - Deus"
     putStrLn "2 - Tonto"
+    putStrLn "3 - Normal"
     modo <- getLine
     jogar modo
