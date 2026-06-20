@@ -1,8 +1,7 @@
-import System.Random (randomIO)
-import Data.List (genericLength)
+import System.Random (randomRIO)
 
 vence :: String -> String -> Bool
-vence "Pedra" "Tesoura" = True 
+vence "Pedra" "Tesoura" = True
 vence "Pedra" "Agua" = True
 
 vence "Tesoura" "Papel" = True
@@ -19,19 +18,16 @@ vence "Agua" "Fogo" = True
 
 vence _ _ = False
 
-pickRandom :: [String] -> String
+pickRandom :: [String] -> IO String
 pickRandom xs = do
-    idx <- randomIO (0, 4)
-    str <- xs!!idx
-    return str
-
+    idx <- randomRIO (0, length xs - 1)
+    return (xs !! idx)
 
 resultado :: String -> String -> String
 resultado jogador maquina
     | jogador == maquina = "Empate!"
     | vence jogador maquina = "Voce venceu!"
     | otherwise = "Voce perdeu!"
-
 
 resultadoDeus :: String -> String
 resultadoDeus entrada
@@ -41,20 +37,18 @@ resultadoDeus entrada
     | entrada == "Fogo"    = resultado entrada "Agua"
     | otherwise            = resultado entrada "Pedra"
 
-
 resultadoTonto :: String -> String
 resultadoTonto entrada
     | entrada == "Fogo" = resultado entrada "Pedra"
     | entrada == "Agua" = resultado entrada "Fogo"
     | otherwise         = resultado entrada "Agua"
 
-
-resultadoNormal :: String -> String
+resultadoNormal :: String -> IO String
 resultadoNormal entrada = do
     maquina <- pickRandom ["Pedra", "Papel", "Tesoura", "Fogo", "Agua"]
     return (resultado entrada maquina)
 
-jogar :: String -> String
+jogar :: String -> IO ()
 jogar modo = do
     putStrLn "Escolha sua jogada:"
     putStrLn "1 - Pedra"
@@ -64,19 +58,29 @@ jogar modo = do
     putStrLn "5 - Fogo"
 
     entrada <- getLine
-    jogada <- case entrada of
-        "1" -> return ("Pedra")
-        "2" -> return ("Papel")
-        "3" -> return ("Tesoura")
-        "4" -> return ("Agua")
-        "5" -> return ("Fogo")
 
-    resultado <- case modo of
+    let jogada = case entrada of
+            "1" -> "Pedra"
+            "2" -> "Papel"
+            "3" -> "Tesoura"
+            "4" -> "Agua"
+            "5" -> "Fogo"
+            _   -> "Pedra"
+
+    resultadoFinal <- case modo of
         "1" -> return (resultadoDeus jogada)
         "2" -> return (resultadoTonto jogada)
-        "3" -> return (resultadoNormal jogada)
+        "3" -> resultadoNormal jogada
+        _   -> return "Modo invalido"
 
-    putStrLn (resultado)
+    putStrLn resultadoFinal
+    
+    putStrLn "\n Jogar Novamente? (s/n)"
+    resp <- getLine
+    
+    if resp == "s"
+        then jogar modo
+        else putStrLn "Fim de Jogo!"
 
 main :: IO ()
 main = do
@@ -84,5 +88,6 @@ main = do
     putStrLn "1 - Deus"
     putStrLn "2 - Tonto"
     putStrLn "3 - Normal"
+
     modo <- getLine
     jogar modo
